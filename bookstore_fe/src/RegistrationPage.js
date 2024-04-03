@@ -5,8 +5,8 @@ import './styles.css';
 function RegistrationPage() {
   
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     password: ''
   });
@@ -29,8 +29,10 @@ function RegistrationPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData) 
       });
+      const data = await response.json();
+      console.log(data);
       if (response.ok) {
         // Successfully registered user, redirect to login page
         navigate('/login');
@@ -48,19 +50,19 @@ function RegistrationPage() {
       <h2>Registration</h2>
       <div className="input-group">
         <label htmlFor="firstName">First Name:</label>
-        <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} />
+        <input type="text" id="firstName" name="first_name" value={formData.first_name} onChange={handleChange} />
       </div>
       <div className="input-group">
         <label htmlFor="lastName">Last Name:</label>
-        <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} />
+        <input type="text" id="lastName" name="last_name" value={formData.last_name} onChange={handleChange} />
       </div>
       <div className="input-group">
         <label htmlFor="email">Email:</label>
-        <input type="email" id="email" name="email" value={formData.lastName} onChange={handleChange} />
+        <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} />
       </div>
       <div className="input-group">
         <label htmlFor="password">Password:</label>
-        <input type="password" id="password" name="password" value={formData.lastName} onChange={handleChange} />
+        <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} />
       </div>
       <button type="submit" onClick={handleRegistration}>Register</button>
       <p>Already have an account? <Link to="/login">Login</Link></p>
