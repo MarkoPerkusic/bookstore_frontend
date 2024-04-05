@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './styles.css';
+import { setAuthToken } from './Utils';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -29,10 +30,32 @@ function Login() {
         body: JSON.stringify(formData)
       });
       if (response.ok) {
-        // You have successfully logged in, you can redirect the user to another page
-        navigate('/dashboard');
+        // Successfully logged in, redirect the user to another page
+		
+	    const data = await response.json();
+        const { role } = data;
+		const { name } = data;
+		
+		setAuthToken(access_token);
+		localStorage.setItem('userName', name);
+		
+		// Redirect user based on their role
+        switch (role) {
+          case 'customer':
+            navigate('/profile');
+            break;
+          case 'admin':
+            navigate('/librarian/clients');
+            break;
+          case 'librarian':
+            navigate('/librarian/clients');
+            break;
+          default:
+            console.error('Unknown role:', role);
+            break;
+        }
       } else {
-        // Login failed, handle the error (eg show a message to the user)
+        // Login failed, show a message to the user
         console.error('Login failed:', response.statusText);
       }
     } catch (error) {
