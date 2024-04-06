@@ -19,49 +19,53 @@ function Login() {
     }));
   };
 
-  const handleLogin = async () => {
-    try {
-      // Login API endpoint
-      const response = await fetch('http://localhost:8000/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-      if (response.ok) {
-        // Successfully logged in, redirect the user to another page
-		
-	    const data = await response.json();
-        const { role } = data;
-		const { name } = data;
-		
-		setAuthToken(access_token);
-		localStorage.setItem('userName', name);
-		
-		// Redirect user based on their role
-        switch (role) {
-          case 'customer':
-            navigate('/profile');
-            break;
-          case 'admin':
-            navigate('/librarian/clients');
-            break;
-          case 'librarian':
-            navigate('/librarian/clients');
-            break;
-          default:
-            console.error('Unknown role:', role);
-            break;
-        }
-      } else {
-        // Login failed, show a message to the user
-        console.error('Login failed:', response.statusText);
+const handleLogin = async () => {
+  try {
+	const { email, password } = formData;
+    const bodyFormData = new URLSearchParams();
+    bodyFormData.append('username', email);
+    bodyFormData.append('password', password);
+
+    const response = await fetch('http://localhost:8000/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: bodyFormData
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const { role, name, access_token } = data;
+
+      setAuthToken(access_token);
+      localStorage.setItem('userName', name);
+
+      switch (role) {
+        case 'customer':
+          navigate('/profile');
+          break;
+        case 'admin':
+          navigate('/librarian/clients');
+          break;
+        case 'librarian':
+          navigate('/librarian/clients');
+          break;
+        default:
+          console.error('Unknown role:', role);
+          break;
       }
-    } catch (error) {
-      console.error('Error logging in:', error);
+    } else {
+      // Login failed, show error message to the user
+      const errorMessage = await response.text();
+      console.error('Login failed:', errorMessage);
+      // You can display the error message to the user or handle it in any other way
     }
-  };
+  } catch (error) {
+    console.error('Error logging in:', error);
+    // Display a generic error message to the user or handle the error in any other way
+  }
+};
 
   return (
     <div className="form-container">
